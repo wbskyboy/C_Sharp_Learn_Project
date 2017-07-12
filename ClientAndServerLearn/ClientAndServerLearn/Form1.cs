@@ -19,6 +19,7 @@ namespace ClientAndServerLearn
         {
             InitializeComponent();
             ServerStart();
+            svrThread.Start();
         }
 
         private void ServerStart()
@@ -33,9 +34,9 @@ namespace ClientAndServerLearn
                 if (_ShutdownEvent.WaitOne(0))
                     break;
                 SetText("hello this is world!",Color.Red);
-                Thread.Sleep(100);
+                Thread.Sleep(1000);
                 SetText("Fuck away this is world!",Color.White);
-                Thread.Sleep(100);
+                Thread.Sleep(1000);
             }
         }
         private void PauseThread()
@@ -52,10 +53,17 @@ namespace ClientAndServerLearn
             _PauseEvent.Set();
             svrThread.Join();
         }
+        private void ReStartThread()
+        {
+            _ShutdownEvent.Reset();
+            _PauseEvent.Set();
+        }
         private void button1_Click(object sender, EventArgs e)
         {
-            if (svrThread.ThreadState == ThreadState.Unstarted)
+            if (!svrThread.IsAlive)
             {
+                ServerStart();
+                ReStartThread();
                 svrThread.Start();
             }
             else
